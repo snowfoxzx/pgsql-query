@@ -21,6 +21,7 @@ Agents working in this repository should preserve these constraints:
 - New user-facing capabilities should be added to `pgq` subcommands, flags, or output modes
 - Repository scripts may support development, smoke testing, and packaging, but they are not part of the product surface
 - Keep the PostgreSQL workflow read-only unless the repository requirements explicitly change
+- Use only the `PGQ_*` environment variable names for runtime configuration: `PGQ_URL`, `PGQ_HOST`, `PGQ_PORT`, `PGQ_USER`, `PGQ_PASS`, and `PGQ_DB`
 
 ## Repository Layout
 

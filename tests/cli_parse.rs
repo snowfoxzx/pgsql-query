@@ -90,3 +90,28 @@ fn summarizes_field_based_connection_target() {
         Some("host=db.internal port=5433 user=reader dbname=analytics")
     );
 }
+
+#[test]
+fn reads_pgq_prefixed_environment_variables() {
+    // Serialized env-var test; avoid parallel mutation by using distinct names only once here.
+    unsafe {
+        std::env::set_var("PGQ_URL", "postgres://demo:secret@db.internal:5432/app");
+        std::env::remove_var("PGQ_HOST");
+        std::env::remove_var("PGQ_PORT");
+        std::env::remove_var("PGQ_USER");
+        std::env::remove_var("PGQ_PASS");
+        std::env::remove_var("PGQ_DB");
+    }
+
+    let cli = Cli::try_parse_from(["pgq", "ping"]).expect("cli should parse");
+    let resolved = ConnectionConfig::from_sources(&cli).expect("config should resolve");
+
+    assert_eq!(
+        resolved.url.as_deref(),
+        Some("postgres://demo:secret@db.internal:5432/app")
+    );
+
+    unsafe {
+        std::env::remove_var("PGQ_URL");
+    }
+}

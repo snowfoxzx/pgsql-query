@@ -47,6 +47,17 @@ target/debug/pgq \
   ping
 ```
 
+Environment variable equivalents:
+
+```bash
+export PGQ_URL='postgres://user:password@host:5432/dbname'
+export PGQ_HOST='127.0.0.1'
+export PGQ_PORT='5432'
+export PGQ_USER='postgres'
+export PGQ_PASS='secret'
+export PGQ_DB='app'
+```
+
 Supported commands:
 
 - `ping`
@@ -62,7 +73,7 @@ Supported commands:
 Run the local smoke script against a database:
 
 ```bash
-DATABASE_URL='postgres://user:password@localhost:5432/app' scripts/smoke.sh
+PGQ_URL='postgres://user:password@localhost:5432/app' scripts/smoke.sh
 ```
 
 Run tests:

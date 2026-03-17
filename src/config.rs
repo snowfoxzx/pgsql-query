@@ -16,20 +16,20 @@ pub struct ConnectionConfig {
 impl ConnectionConfig {
     pub fn from_sources(cli: &Cli) -> Result<Self> {
         let config = Self {
-            url: cli.url.clone().or_else(|| std::env::var("DATABASE_URL").ok()),
-            host: cli.host.clone().or_else(|| std::env::var("PGHOST").ok()),
+            url: cli.url.clone().or_else(|| std::env::var("PGQ_URL").ok()),
+            host: cli.host.clone().or_else(|| std::env::var("PGQ_HOST").ok()),
             port: cli
                 .port
-                .or_else(|| std::env::var("PGPORT").ok().and_then(|value| value.parse().ok())),
-            user: cli.user.clone().or_else(|| std::env::var("PGUSER").ok()),
+                .or_else(|| std::env::var("PGQ_PORT").ok().and_then(|value| value.parse().ok())),
+            user: cli.user.clone().or_else(|| std::env::var("PGQ_USER").ok()),
             password: cli
                 .password
                 .clone()
-                .or_else(|| std::env::var("PGPASSWORD").ok()),
+                .or_else(|| std::env::var("PGQ_PASS").ok()),
             dbname: cli
                 .dbname
                 .clone()
-                .or_else(|| std::env::var("PGDATABASE").ok()),
+                .or_else(|| std::env::var("PGQ_DB").ok()),
         };
 
         if config.url.is_none()

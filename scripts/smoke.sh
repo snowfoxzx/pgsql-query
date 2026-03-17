@@ -10,7 +10,7 @@ Runs a local smoke test against the pgq CLI.
 
 Required connection input:
   --url <postgres-url>   PostgreSQL URL
-  or set DATABASE_URL in the environment
+  or set PGQ_URL in the environment
 
 Options:
   --schema <schema>      Schema used for table checks (default: public)
@@ -27,7 +27,7 @@ Smoke steps:
   5. pgq describe/sample if --table is provided
 
 Examples:
-  DATABASE_URL='postgres://user:pass@localhost:5432/app' scripts/smoke.sh
+  PGQ_URL='postgres://user:pass@localhost:5432/app' scripts/smoke.sh
   scripts/smoke.sh --url 'postgres://user:pass@localhost:5432/app' --schema public --table users
 EOF
 }
@@ -40,7 +40,7 @@ redact_url() {
   printf '%s' "$1" | sed -E 's#(postgres(ql)?://[^:/@]+):[^@]*@#\1:***@#'
 }
 
-URL="${DATABASE_URL:-}"
+URL="${PGQ_URL:-}"
 SCHEMA="public"
 TABLE=""
 LIMIT="5"
@@ -81,7 +81,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$URL" ]]; then
-  printf 'Missing PostgreSQL connection string. Use --url or set DATABASE_URL.\n\n' >&2
+  printf 'Missing PostgreSQL connection string. Use --url or set PGQ_URL.\n\n' >&2
   usage >&2
   exit 2
 fi

@@ -97,3 +97,24 @@ The package is written to `dist/pgq/` and includes:
 - `bin/pgq`
 - `skills/postgresql-readonly-cli/SKILL.md`
 - `README.md`
+
+## GitHub Releases
+
+This repository is designed to publish cross-platform release archives through GitHub Actions.
+
+Supported targets:
+
+- `x86_64-apple-darwin`
+- `aarch64-apple-darwin`
+- `x86_64-unknown-linux-gnu`
+- `aarch64-unknown-linux-gnu`
+- `x86_64-pc-windows-msvc`
+- `aarch64-pc-windows-msvc`
+
+Workflow behavior:
+
+- tag pushes matching `v*` create release builds automatically
+- `workflow_dispatch` can be used for manual releases by providing a tag
+- workflow artifacts are uploaded for each target
+- GitHub Release assets are named as `pgq-<tag>-<target>.tar.gz`
+- Windows assets are named as `pgq-<tag>-<target>.zip`

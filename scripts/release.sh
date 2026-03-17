@@ -66,33 +66,25 @@ if [[ "$SKIP_BUILD" != "1" ]]; then
 fi
 
 BIN_SOURCE="target/release/pgq"
-SKILL_SOURCE=".codex/skills/postgresql-readonly-cli/SKILL.md"
-README_SOURCE="README.md"
+HOST_TARGET="$(rustc -vV | sed -n 's/^host: //p')"
 
 if [[ ! -x "$BIN_SOURCE" ]]; then
   printf 'Missing release binary: %s\n' "$BIN_SOURCE" >&2
   exit 1
 fi
 
-if [[ ! -f "$SKILL_SOURCE" ]]; then
-  printf 'Missing skill file: %s\n' "$SKILL_SOURCE" >&2
-  exit 1
-fi
-
-if [[ ! -f "$README_SOURCE" ]]; then
-  printf 'Missing README: %s\n' "$README_SOURCE" >&2
+if [[ -z "$HOST_TARGET" ]]; then
+  printf 'Unable to determine host Rust target.\n' >&2
   exit 1
 fi
 
 log "Preparing ${OUTPUT_DIR}"
-rm -rf "$OUTPUT_DIR"
-mkdir -p "$OUTPUT_DIR/bin" "$OUTPUT_DIR/skills/postgresql-readonly-cli"
-
-cp "$BIN_SOURCE" "$OUTPUT_DIR/bin/pgq"
-cp "$SKILL_SOURCE" "$OUTPUT_DIR/skills/postgresql-readonly-cli/SKILL.md"
-cp "$README_SOURCE" "$OUTPUT_DIR/README.md"
-
-chmod +x "$OUTPUT_DIR/bin/pgq"
+bash scripts/package-release.sh \
+  --version local \
+  --target "$HOST_TARGET" \
+  --binary "$BIN_SOURCE" \
+  --package-root "$OUTPUT_DIR" \
+  --no-archive
 
 log "Release package created"
 printf 'Binary: %s\n' "$OUTPUT_DIR/bin/pgq"

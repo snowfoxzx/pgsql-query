@@ -1,6 +1,6 @@
 # pgq
 
-`pgq` is a read-only PostgreSQL CLI written in Rust. It is intended for schema inspection and safe data exploration without requiring `psql` or Python.
+`pgq` is a read-only PostgreSQL CLI written in Rust. It is intended for schema inspection and safe data exploration without requiring `psql`.
 
 ## Features
 

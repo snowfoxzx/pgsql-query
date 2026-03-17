@@ -55,7 +55,7 @@ jobs:
             binary_name: pgq.exe
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -77,7 +77,7 @@ jobs:
             --output-dir dist/releases
 
       - name: Upload workflow artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pgq-${{ needs.meta.outputs.release_tag }}-${{ matrix.target }}
           path: |
@@ -92,7 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download packaged artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: dist/artifacts
           pattern: pgq-${{ needs.meta.outputs.release_tag }}-*

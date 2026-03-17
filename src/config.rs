@@ -100,10 +100,7 @@ impl ConnectionConfig {
 
 fn summarize_url(url: &str) -> Option<String> {
     let parsed = url.parse::<PgConfig>().ok()?;
-    let host = parsed.get_hosts().first().map(|host| match host {
-        tokio_postgres::config::Host::Tcp(name) => name.to_string(),
-        tokio_postgres::config::Host::Unix(path) => path.display().to_string(),
-    })?;
+    let host = parsed.get_hosts().first().map(host_to_string)?;
     let port = parsed.get_ports().first().copied().unwrap_or(5432);
     let user = parsed.get_user().map(str::to_owned);
     let dbname = parsed.get_dbname().map(str::to_owned);
@@ -121,4 +118,19 @@ fn summarize_url(url: &str) -> Option<String> {
         summary.push_str(&dbname);
     }
     Some(summary)
+}
+
+#[cfg(unix)]
+fn host_to_string(host: &tokio_postgres::config::Host) -> String {
+    match host {
+        tokio_postgres::config::Host::Tcp(name) => name.to_string(),
+        tokio_postgres::config::Host::Unix(path) => path.display().to_string(),
+    }
+}
+
+#[cfg(not(unix))]
+fn host_to_string(host: &tokio_postgres::config::Host) -> String {
+    match host {
+        tokio_postgres::config::Host::Tcp(name) => name.to_string(),
+    }
 }

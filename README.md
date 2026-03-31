@@ -86,14 +86,15 @@ cargo test
 
 This repository also includes the `postgresql-readonly-cli` skill:
 
-- Source: `.codex/skills/postgresql-readonly-cli/SKILL.md`
+- Source: `skills/postgresql-readonly-cli/SKILL.md`
 
-The skill is designed to guide an agent toward a safe query flow:
+Install the correct binary for the current platform with:
 
-1. inspect schemas and tables
-2. run `describe`
-3. run `sample`
-4. use guarded read-only `query` only when needed
+```bash
+sh skills/postgresql-readonly-cli/scripts/install_pgq.sh
+```
+
+The skill installer downloads the correct GitHub Release archive for the local platform, verifies it against `SHA256SUMS`, and extracts the binary to `skills/postgresql-readonly-cli/bin/`.
 
 ## Release Packaging
 
@@ -106,7 +107,7 @@ scripts/release.sh
 The package is written to `dist/pgq/` and includes:
 
 - `bin/pgq`
-- `skills/postgresql-readonly-cli/SKILL.md`
+- `skills/postgresql-readonly-cli/`
 - `README.md`
 
 ## GitHub Releases
@@ -127,5 +128,6 @@ Workflow behavior:
 - tag pushes matching `v*` create release builds automatically
 - `workflow_dispatch` can be used for manual releases by providing a tag
 - workflow artifacts are uploaded for each target
-- GitHub Release assets are named as `pgq-<tag>-<target>.tar.gz`
-- Windows assets are named as `pgq-<tag>-<target>.zip`
+- GitHub Release assets are named as `pgq-<os>-<arch>.tar.gz`
+- Windows assets are named as `pgq-<os>-<arch>.zip`
+- each release publishes a `SHA256SUMS` file for installer verification

@@ -7,7 +7,7 @@ This repository contains `pgq`, a Rust command-line tool for read-only PostgreSQ
 The primary deliverables in this repository are:
 
 - the `pgq` binary
-- the `postgresql-readonly-cli` skill
+- the `postgresql-readonly-cli` skill and its self-installing distribution assets
 - packaging and validation scripts for local development and release builds
 
 ## Working Boundary
@@ -28,7 +28,7 @@ Agents working in this repository should preserve these constraints:
 - `src/`: Rust implementation of the CLI
 - `tests/`: CLI parsing, query guard, packaging, and documentation checks
 - `scripts/`: development and packaging helpers such as `smoke.sh`, `release.sh`, and `package-release.sh`
-- `.codex/skills/postgresql-readonly-cli/`: skill definition for agent usage
+- `skills/postgresql-readonly-cli/`: distributable skill, installer script, and local skill binary directory
 - `.github/workflows/`: GitHub Actions release automation
 - `docs/`: implementation planning artifacts
 - `dist/`: generated release output; do not treat as source
@@ -55,6 +55,7 @@ For real database validation, provide a PostgreSQL connection string to `scripts
 - Keep `README.md`, release packaging, and skill instructions aligned
 - If release contents change, update `scripts/release.sh` and any tests that assert package layout
 - If GitHub release targets or archive names change, update `.github/workflows/release.yml`, `scripts/package-release.sh`, `README.md`, and the release contract tests together
+- Preserve the installer contract: the skill installer resolves GitHub Release assets by platform name and verifies them with `SHA256SUMS`
 - Do not commit `dist/` or build artifacts
 - Prefer extending the existing CLI flow over creating new entry-point scripts
 
@@ -63,15 +64,16 @@ For real database validation, provide a PostgreSQL connection string to `scripts
 The current release package is expected to contain:
 
 - `bin/pgq`
-- `skills/postgresql-readonly-cli/SKILL.md`
+- `skills/postgresql-readonly-cli/`
 - `README.md`
 
 Agents should preserve this contract unless the release design is intentionally changed everywhere that depends on it.
 
 GitHub Actions release archives currently follow these names:
 
-- `pgq-<tag>-<target>.tar.gz`
-- `pgq-<tag>-<target>.zip` for Windows targets
+- `pgq-<os>-<arch>.tar.gz`
+- `pgq-<os>-<arch>.zip` for Windows targets
+- `SHA256SUMS`
 
 ## Agent Workflow
 

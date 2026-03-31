@@ -10,7 +10,7 @@ Builds the pgq release binary and packages distributable artifacts into dist/pgq
 
 Artifacts:
   dist/pgq/bin/pgq
-  dist/pgq/skills/postgresql-readonly-cli/SKILL.md
+  dist/pgq/skills/postgresql-readonly-cli/
   dist/pgq/README.md
 
 Options:
@@ -80,7 +80,6 @@ fi
 
 log "Preparing ${OUTPUT_DIR}"
 bash scripts/package-release.sh \
-  --version local \
   --target "$HOST_TARGET" \
   --binary "$BIN_SOURCE" \
   --package-root "$OUTPUT_DIR" \
@@ -89,4 +88,5 @@ bash scripts/package-release.sh \
 log "Release package created"
 printf 'Binary: %s\n' "$OUTPUT_DIR/bin/pgq"
 printf 'Skill:  %s\n' "$OUTPUT_DIR/skills/postgresql-readonly-cli/SKILL.md"
+printf 'Install: %s\n' "$OUTPUT_DIR/skills/postgresql-readonly-cli/scripts/install_pgq.sh"
 printf 'Readme: %s\n' "$OUTPUT_DIR/README.md"

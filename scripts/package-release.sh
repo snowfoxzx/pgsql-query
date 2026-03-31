@@ -4,21 +4,22 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: scripts/package-release.sh --version <version> --target <target> --binary <path> [--output-dir <dir>] [--package-root <dir>] [--no-archive] [--help]
+Usage: scripts/package-release.sh --target <target> --binary <path> [--output-dir <dir>] [--package-root <dir>] [--no-archive] [--help]
 
-Packages a built pgq binary together with the skill and README.
+Packages a built pgq binary together with the distributable skill and README.
 
 Default archive names:
-  pgq-${VERSION}-${TARGET}.tar.gz
-  pgq-${VERSION}-${TARGET}.zip
+  pgq-${OS}-${ARCH}.tar.gz
+  pgq-${OS}-${ARCH}.zip
+
+Release workflows are expected to publish these archives together with a SHA256SUMS file.
 
 Contents:
   README.md
   bin/pgq or bin/pgq.exe
-  skills/postgresql-readonly-cli/SKILL.md
+  skills/postgresql-readonly-cli/
 
 Options:
-  --version <version>     Version or tag used in archive naming
   --target <target>       Rust target triple, for example x86_64-apple-darwin
   --binary <path>         Path to the compiled pgq binary
   --output-dir <dir>      Output directory for archives and package folders (default: dist/releases)
@@ -28,7 +29,6 @@ Options:
 EOF
 }
 
-VERSION=""
 TARGET=""
 BINARY=""
 OUTPUT_DIR="dist/releases"
@@ -37,10 +37,6 @@ NO_ARCHIVE="0"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --version)
-      VERSION="${2:-}"
-      shift 2
-      ;;
     --target)
       TARGET="${2:-}"
       shift 2
@@ -73,8 +69,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "$VERSION" || -z "$TARGET" || -z "$BINARY" ]]; then
-  printf 'Missing required arguments. --version, --target, and --binary are required.\n\n' >&2
+if [[ -z "$TARGET" || -z "$BINARY" ]]; then
+  printf 'Missing required arguments. --target and --binary are required.\n\n' >&2
   usage >&2
   exit 2
 fi
@@ -85,19 +81,54 @@ if [[ ! -f "$BINARY" ]]; then
 fi
 
 README_SOURCE="README.md"
-SKILL_SOURCE=".codex/skills/postgresql-readonly-cli/SKILL.md"
+SKILL_SOURCE_DIR="skills/postgresql-readonly-cli"
 
 if [[ ! -f "$README_SOURCE" ]]; then
   printf 'Missing README: %s\n' "$README_SOURCE" >&2
   exit 1
 fi
 
-if [[ ! -f "$SKILL_SOURCE" ]]; then
-  printf 'Missing skill file: %s\n' "$SKILL_SOURCE" >&2
+if [[ ! -f "$SKILL_SOURCE_DIR/SKILL.md" ]]; then
+  printf 'Missing skill file: %s\n' "$SKILL_SOURCE_DIR/SKILL.md" >&2
   exit 1
 fi
 
-PACKAGE_NAME="pgq-${VERSION}-${TARGET}"
+normalize_os() {
+  case "$1" in
+    *apple-darwin)
+      printf 'macos\n'
+      ;;
+    *unknown-linux-gnu)
+      printf 'linux\n'
+      ;;
+    *pc-windows-msvc)
+      printf 'windows\n'
+      ;;
+    *)
+      printf 'unsupported target: %s\n' "$1" >&2
+      exit 1
+      ;;
+  esac
+}
+
+normalize_arch() {
+  case "$1" in
+    x86_64-*)
+      printf 'x86_64\n'
+      ;;
+    aarch64-*)
+      printf 'aarch64\n'
+      ;;
+    *)
+      printf 'unsupported target: %s\n' "$1" >&2
+      exit 1
+      ;;
+  esac
+}
+
+OS_NAME="$(normalize_os "$TARGET")"
+ARCH_NAME="$(normalize_arch "$TARGET")"
+PACKAGE_NAME="pgq-${OS_NAME}-${ARCH_NAME}"
 PACKAGE_DIR="${PACKAGE_ROOT:-${OUTPUT_DIR}/${PACKAGE_NAME}}"
 BIN_NAME="pgq"
 
@@ -108,11 +139,11 @@ case "$BINARY" in
 esac
 
 rm -rf "$PACKAGE_DIR"
-mkdir -p "$PACKAGE_DIR/bin" "$PACKAGE_DIR/skills/postgresql-readonly-cli"
+mkdir -p "$PACKAGE_DIR/bin" "$PACKAGE_DIR/skills"
 
 cp "$BINARY" "$PACKAGE_DIR/bin/${BIN_NAME}"
 cp "$README_SOURCE" "$PACKAGE_DIR/README.md"
-cp "$SKILL_SOURCE" "$PACKAGE_DIR/skills/postgresql-readonly-cli/SKILL.md"
+cp -R "$SKILL_SOURCE_DIR" "$PACKAGE_DIR/skills/postgresql-readonly-cli"
 
 if [[ "$BIN_NAME" != "pgq.exe" ]]; then
   chmod +x "$PACKAGE_DIR/bin/${BIN_NAME}"
@@ -126,7 +157,7 @@ fi
 
 mkdir -p "$OUTPUT_DIR"
 
-if [[ "$TARGET" == *windows* ]]; then
+if [[ "$OS_NAME" == "windows" ]]; then
   ARCHIVE_PATH="${OUTPUT_DIR}/${PACKAGE_NAME}.zip"
   rm -f "$ARCHIVE_PATH"
   powershell.exe -NoLogo -NoProfile -Command \

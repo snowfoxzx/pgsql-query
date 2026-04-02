@@ -120,3 +120,7 @@ Workflow behavior:
 - GitHub Release assets are named as `pgsql-query-<os>-<arch>.tar.gz`
 - Windows assets are named as `pgsql-query-<os>-<arch>.zip`
 - each release publishes a `SHA256SUMS` file for installer verification
+
+Release rule:
+
+- Before any release, update the crate version and ensure the `Cargo.toml` version matches the tag being published

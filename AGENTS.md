@@ -49,6 +49,7 @@ cargo build --release
 - Keep `README.md`, release packaging, and skill instructions aligned
 - If release contents change, update `.github/workflows/release.yml` and any tests that assert package layout
 - If GitHub release targets or archive names change, update `.github/workflows/release.yml`, `README.md`, and the release contract tests together
+- Before any release, update the crate version and ensure the `Cargo.toml` version matches the tag being published
 - Preserve the installer contract: the skill installer resolves GitHub Release assets by platform name and verifies them with `SHA256SUMS`
 - Do not commit `dist/` or build artifacts
 - Prefer extending the existing CLI flow over creating new entry-point scripts

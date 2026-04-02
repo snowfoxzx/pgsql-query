@@ -1,4 +1,4 @@
-# pgq CLI And Skill Implementation Plan
+# pgsql-query CLI And Skill Implementation Plan
 
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -62,7 +62,7 @@
 ### Task 4: Create the skill
 
 **Files:**
-- Create: `.codex/skills/postgresql-readonly-cli/SKILL.md`
+- Create: `skills/pgsql-query/SKILL.md`
 
 - [ ] Step 1: Write the skill with concise trigger conditions and stable command examples
 - [ ] Step 2: Check that the skill stays aligned with the final CLI behavior
@@ -73,7 +73,7 @@
 - Verify: `Cargo.toml`
 - Verify: `src/*.rs`
 - Verify: `tests/*.rs`
-- Verify: `.codex/skills/postgresql-readonly-cli/SKILL.md`
+- Verify: `skills/pgsql-query/SKILL.md`
 
 - [ ] Step 1: Run `cargo test`
 - [ ] Step 2: Run `cargo build`

@@ -1,6 +1,6 @@
-# pgq
+# pgsql-query
 
-`pgq` is a read-only PostgreSQL CLI written in Rust. It is intended for schema inspection and safe data exploration without requiring `psql`.
+`pgsql-query` is a read-only PostgreSQL CLI written in Rust. It is intended for schema inspection and safe data exploration without requiring `psql`.
 
 ## Features
 
@@ -30,15 +30,15 @@ cargo build --release
 With a connection URL:
 
 ```bash
-target/debug/pgq --url 'postgres://user:password@host:5432/dbname' schemas
-target/debug/pgq --url 'postgres://user:password@host:5432/dbname' describe users --schema public
-target/debug/pgq --url 'postgres://user:password@host:5432/dbname' query --sql "select count(*) from public.users"
+pgsql-query --url 'postgres://user:password@host:5432/dbname' schemas
+pgsql-query --url 'postgres://user:password@host:5432/dbname' describe users --schema public
+pgsql-query --url 'postgres://user:password@host:5432/dbname' query --sql "select count(*) from public.users"
 ```
 
 With split fields:
 
 ```bash
-target/debug/pgq \
+pgsql-query \
   --host 127.0.0.1 \
   --port 5432 \
   --user postgres \
@@ -68,13 +68,7 @@ Supported commands:
 - `sample <table> [--schema <schema>] [--limit <n>]`
 - `query --sql "<read-only-sql>"`
 
-## Local Validation
-
-Run the local smoke script against a database:
-
-```bash
-PGQ_URL='postgres://user:password@localhost:5432/app' scripts/smoke.sh
-```
+## Validation
 
 Run tests:
 
@@ -84,30 +78,25 @@ cargo test
 
 ## Skill
 
-This repository also includes the `postgresql-readonly-cli` skill:
+This repository also includes the `pgsql-query` skill:
 
-- Source: `skills/postgresql-readonly-cli/SKILL.md`
+- Source: `skills/pgsql-query/SKILL.md`
 
 Install the correct binary for the current platform with:
 
 ```bash
-sh skills/postgresql-readonly-cli/scripts/install_pgq.sh
+sh skills/pgsql-query/scripts/install_pgsql_query.sh
 ```
 
-The skill installer downloads the correct GitHub Release archive for the local platform, verifies it against `SHA256SUMS`, and extracts the binary to `skills/postgresql-readonly-cli/bin/`.
+The skill installer downloads the correct GitHub Release archive for the local platform, verifies it against `SHA256SUMS`, and extracts the binary to `skills/pgsql-query/bin/`.
 
 ## Release Packaging
 
-Create a distributable package with:
+GitHub Actions publishes per-platform release archives directly from the workflow.
 
-```bash
-scripts/release.sh
-```
+Release archives include:
 
-The package is written to `dist/pgq/` and includes:
-
-- `bin/pgq`
-- `skills/postgresql-readonly-cli/`
+- `pgsql-query` or `pgsql-query.exe`
 - `README.md`
 
 ## GitHub Releases
@@ -128,6 +117,6 @@ Workflow behavior:
 - tag pushes matching `v*` create release builds automatically
 - `workflow_dispatch` can be used for manual releases by providing a tag
 - workflow artifacts are uploaded for each target
-- GitHub Release assets are named as `pgq-<os>-<arch>.tar.gz`
-- Windows assets are named as `pgq-<os>-<arch>.zip`
+- GitHub Release assets are named as `pgsql-query-<os>-<arch>.tar.gz`
+- Windows assets are named as `pgsql-query-<os>-<arch>.zip`
 - each release publishes a `SHA256SUMS` file for installer verification

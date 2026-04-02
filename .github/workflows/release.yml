@@ -39,32 +39,32 @@ jobs:
             os_name: macos
             arch_name: x86_64
             target: x86_64-apple-darwin
-            binary_name: pgq
+            binary_name: pgsql-query
           - runner: macos-15
             os_name: macos
             arch_name: aarch64
             target: aarch64-apple-darwin
-            binary_name: pgq
+            binary_name: pgsql-query
           - runner: ubuntu-24.04
             os_name: linux
             arch_name: x86_64
             target: x86_64-unknown-linux-gnu
-            binary_name: pgq
+            binary_name: pgsql-query
           - runner: ubuntu-24.04-arm
             os_name: linux
             arch_name: aarch64
             target: aarch64-unknown-linux-gnu
-            binary_name: pgq
+            binary_name: pgsql-query
           - runner: windows-2025
             os_name: windows
             arch_name: x86_64
             target: x86_64-pc-windows-msvc
-            binary_name: pgq.exe
+            binary_name: pgsql-query.exe
           - runner: windows-11-arm
             os_name: windows
             arch_name: aarch64
             target: aarch64-pc-windows-msvc
-            binary_name: pgq.exe
+            binary_name: pgsql-query.exe
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
@@ -79,21 +79,28 @@ jobs:
         run: cargo build --release --locked --target "${{ matrix.target }}"
 
       - name: Package release archive
-        id: package
         shell: bash
         run: |
-          bash scripts/package-release.sh \
-            --target "${{ matrix.target }}" \
-            --binary "target/${{ matrix.target }}/release/${{ matrix.binary_name }}" \
-            --output-dir dist/releases
+          mkdir -p dist/releases/package
+          cp "target/${{ matrix.target }}/release/${{ matrix.binary_name }}" "dist/releases/package/${{ matrix.binary_name }}"
+          cp README.md dist/releases/package/README.md
+
+          if [[ "${{ matrix.os_name }}" == "windows" ]]; then
+            powershell.exe -NoLogo -NoProfile -Command \
+              "Compress-Archive -Path 'dist\\releases\\package\\*' -DestinationPath 'dist\\releases\\pgsql-query-${{ matrix.os_name }}-${{ matrix.arch_name }}.zip' -Force"
+          else
+            tar -C dist/releases/package -czf "dist/releases/pgsql-query-${{ matrix.os_name }}-${{ matrix.arch_name }}.tar.gz" .
+          fi
+
+          rm -rf dist/releases/package
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pgq-${{ matrix.os_name }}-${{ matrix.arch_name }}
+          name: pgsql-query-${{ matrix.os_name }}-${{ matrix.arch_name }}
           path: |
-            dist/releases/pgq-${{ matrix.os_name }}-${{ matrix.arch_name }}.tar.gz
-            dist/releases/pgq-${{ matrix.os_name }}-${{ matrix.arch_name }}.zip
+            dist/releases/pgsql-query-${{ matrix.os_name }}-${{ matrix.arch_name }}.tar.gz
+            dist/releases/pgsql-query-${{ matrix.os_name }}-${{ matrix.arch_name }}.zip
           if-no-files-found: ignore
 
   release:
@@ -106,7 +113,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: dist/artifacts
-          pattern: pgq-*
+          pattern: pgsql-query-*
           merge-multiple: true
 
       - name: Generate SHA256SUMS
@@ -115,7 +122,7 @@ jobs:
           cd dist/artifacts
           shopt -s nullglob
           : > SHA256SUMS
-          for asset in pgq-*.tar.gz pgq-*.zip; do
+          for asset in pgsql-query-*.tar.gz pgsql-query-*.zip; do
             sha256sum "$asset" >> SHA256SUMS
           done
 

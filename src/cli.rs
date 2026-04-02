@@ -1,7 +1,7 @@
 use clap::{Parser, Subcommand};
 
 #[derive(Debug, Parser)]
-#[command(name = "pgq", version, about = "Read-only PostgreSQL CLI")]
+#[command(name = "pgsql-query", version, about = "Read-only PostgreSQL CLI")]
 pub struct Cli {
     #[arg(long, global = true, help = "PostgreSQL connection URL. Fallback env: PGQ_URL")]
     pub url: Option<String>,

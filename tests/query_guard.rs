@@ -1,4 +1,4 @@
-use pgq::commands::is_read_only_sql;
+use pgsql_query::commands::is_read_only_sql;
 
 #[test]
 fn accepts_select_style_queries() {

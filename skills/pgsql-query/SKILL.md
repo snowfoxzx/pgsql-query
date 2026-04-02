@@ -1,11 +1,13 @@
 ---
-name: postgresql-readonly-cli
+name: pgsql-query
 description: Use when you need to inspect PostgreSQL schemas, tables, columns, or sample data through a local read-only CLI, especially when you want the skill to install the correct binary for the current platform automatically.
 ---
 
-# PostgreSQL Read-only CLI
+# pgsql-query
 
-Use this skill to run PostgreSQL schema inspection and read-only queries through the bundled `pgq` CLI.
+Use this skill to run PostgreSQL schema inspection and read-only queries through the bundled `pgsql-query` CLI.
+
+`SKILL_DIR` refers to the installed skill directory.
 
 ## When To Use
 
@@ -20,7 +22,7 @@ Use this skill to run PostgreSQL schema inspection and read-only queries through
 1. Ensure the binary is installed:
 
 ```bash
-sh skills/postgresql-readonly-cli/scripts/install_pgq.sh
+sh "$SKILL_DIR/scripts/install_pgsql_query.sh"
 ```
 
 The install script downloads the platform-specific release archive and verifies it against the release `SHA256SUMS` file before extracting.
@@ -28,17 +30,17 @@ The install script downloads the platform-specific release archive and verifies 
 2. Run the installed binary:
 
 ```bash
-skills/postgresql-readonly-cli/bin/pgq --help
+"$SKILL_DIR/bin/pgsql-query" --help
 ```
 
 3. Prefer commands in this order:
 
 ```bash
-skills/postgresql-readonly-cli/bin/pgq schemas
-skills/postgresql-readonly-cli/bin/pgq tables --schema public
-skills/postgresql-readonly-cli/bin/pgq describe users --schema public
-skills/postgresql-readonly-cli/bin/pgq sample users --schema public --limit 10
-skills/postgresql-readonly-cli/bin/pgq query --sql "select count(*) from public.users"
+"$SKILL_DIR/bin/pgsql-query" schemas
+"$SKILL_DIR/bin/pgsql-query" tables --schema public
+"$SKILL_DIR/bin/pgsql-query" describe users --schema public
+"$SKILL_DIR/bin/pgsql-query" sample users --schema public --limit 10
+"$SKILL_DIR/bin/pgsql-query" query --sql "select count(*) from public.users"
 ```
 
 ## Connection Patterns
@@ -46,7 +48,7 @@ skills/postgresql-readonly-cli/bin/pgq query --sql "select count(*) from public.
 Use either a URL:
 
 ```bash
-skills/postgresql-readonly-cli/bin/pgq \
+"$SKILL_DIR/bin/pgsql-query" \
   --url 'postgres://user:password@host:5432/dbname' \
   schemas
 ```
@@ -54,7 +56,7 @@ skills/postgresql-readonly-cli/bin/pgq \
 Or split fields:
 
 ```bash
-skills/postgresql-readonly-cli/bin/pgq \
+"$SKILL_DIR/bin/pgsql-query" \
   --host host \
   --port 5432 \
   --user user \

@@ -1,0 +1,7 @@
+{
+  "name": "pgsql-query",
+  "display_name": "pgsql-query",
+  "description": "pgsql-query",
+  "prompt": "Use pgsql-query.",
+  "skills": "./skills/"
+}

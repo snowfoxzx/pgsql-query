@@ -1,6 +1,6 @@
 use anyhow::Result;
 use clap::Parser;
-use pgq::{cli::Cli, commands};
+use pgsql_query::{cli::Cli, commands};
 
 #[tokio::main]
 async fn main() -> Result<()> {

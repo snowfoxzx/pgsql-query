@@ -18,7 +18,7 @@
 - Create: `tests/skill_distribution_contract.rs`
 - Modify: `tests/github_release_contract.rs`
 
-- [ ] Step 1: Write failing tests for the new `skills/postgresql-readonly-cli/` layout and installer entrypoint
+- [ ] Step 1: Write failing tests for the new `skills/pgsql-query/` layout and installer entrypoint
 - [ ] Step 2: Write failing tests for release archives and `SHA256SUMS`
 - [ ] Step 3: Run targeted tests and confirm they fail for missing files or missing behavior
 - [ ] Step 4: Implement the minimum structure to make those tests pass
@@ -28,15 +28,14 @@
 ### Task 2: Implement skill-local installation flow
 
 **Files:**
-- Create: `skills/postgresql-readonly-cli/SKILL.md`
-- Create: `skills/postgresql-readonly-cli/scripts/install_pgq.sh`
-- Modify: `scripts/package-release.sh`
-- Modify: `scripts/release.sh`
+- Create: `skills/pgsql-query/SKILL.md`
+- Create: `skills/pgsql-query/scripts/install_pgsql_query.sh`
+- Modify: `.github/workflows/release.yml`
 
 - [ ] Step 1: Add the installer script with platform detection, release URL resolution, and checksum verification
 - [ ] Step 2: Update local packaging to emit archives and a `SHA256SUMS` file
-- [ ] Step 3: Update the local release script to keep `dist/pgq` for host packaging while sharing release archive logic
-- [ ] Step 4: Remove the old `.codex/skills/` skill location from the source tree
+- [ ] Step 3: Update the local release script to keep `dist/pgsql-query` for host packaging while sharing release archive logic
+- [ ] Step 4: Remove the old project-local skill discovery location from the source tree
 
 ## Chunk 3: Workflow And Docs
 

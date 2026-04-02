@@ -4,7 +4,6 @@ set -eu
 
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 SKILL_DIR=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
-# Installs into skills/postgresql-readonly-cli/bin within the checked-out repository.
 BIN_DIR="$SKILL_DIR/bin"
 REPO="${PGQ_REPO:-snowfoxzx/pgsql-query}"
 VERSION="${PGQ_VERSION:-latest}"
@@ -73,7 +72,7 @@ archive_extension() {
 }
 
 asset_name() {
-  printf 'pgq-%s-%s.%s\n' "$(normalized_os)" "$(normalized_arch)" "$(archive_extension)"
+  printf 'pgsql-query-%s-%s.%s\n' "$(normalized_os)" "$(normalized_arch)" "$(archive_extension)"
 }
 
 download_url() {
@@ -198,10 +197,10 @@ extract_archive() {
 binary_name() {
   case "$(normalized_os)" in
     windows)
-      printf 'pgq.exe\n'
+      printf 'pgsql-query.exe\n'
       ;;
     *)
-      printf 'pgq\n'
+      printf 'pgsql-query\n'
       ;;
   esac
 }
@@ -219,7 +218,7 @@ install_binary() {
 
   mkdir -p "$BIN_DIR"
   binary=$(binary_name)
-  extracted_binary=$(find "$temp_dir" -path "*/bin/$binary" -type f | head -n 1)
+  extracted_binary=$(find "$temp_dir" -name "$binary" -type f | head -n 1)
 
   if [ -z "$extracted_binary" ]; then
     printf 'extracted binary not found for %s\n' "$binary" >&2

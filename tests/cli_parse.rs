@@ -1,11 +1,31 @@
 use clap::Parser;
-use pgq::cli::{Cli, Commands};
-use pgq::config::ConnectionConfig;
+use pgsql_query::cli::{Cli, Commands};
+use pgsql_query::config::ConnectionConfig;
+use std::sync::{Mutex, OnceLock};
+
+fn pgq_env_lock() -> &'static Mutex<()> {
+    static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
+    LOCK.get_or_init(|| Mutex::new(()))
+}
+
+fn clear_pgq_env() {
+    unsafe {
+        std::env::remove_var("PGQ_URL");
+        std::env::remove_var("PGQ_HOST");
+        std::env::remove_var("PGQ_PORT");
+        std::env::remove_var("PGQ_USER");
+        std::env::remove_var("PGQ_PASS");
+        std::env::remove_var("PGQ_DB");
+    }
+}
 
 #[test]
 fn parses_url_connection_options() {
+    let _guard = pgq_env_lock().lock().expect("env lock poisoned");
+    clear_pgq_env();
+
     let cli = Cli::try_parse_from([
-        "pgq",
+        "pgsql-query",
         "--url",
         "postgres://demo:secret@localhost:5432/app",
         "ping",
@@ -23,8 +43,11 @@ fn parses_url_connection_options() {
 
 #[test]
 fn parses_field_based_connection_options() {
+    let _guard = pgq_env_lock().lock().expect("env lock poisoned");
+    clear_pgq_env();
+
     let cli = Cli::try_parse_from([
-        "pgq",
+        "pgsql-query",
         "--host",
         "db.internal",
         "--port",
@@ -51,8 +74,11 @@ fn parses_field_based_connection_options() {
 
 #[test]
 fn summarizes_url_connection_target_without_password() {
+    let _guard = pgq_env_lock().lock().expect("env lock poisoned");
+    clear_pgq_env();
+
     let cli = Cli::try_parse_from([
-        "pgq",
+        "pgsql-query",
         "--url",
         "postgres://demo:secret@db.internal:5432/app",
         "ping",
@@ -69,8 +95,11 @@ fn summarizes_url_connection_target_without_password() {
 
 #[test]
 fn summarizes_field_based_connection_target() {
+    let _guard = pgq_env_lock().lock().expect("env lock poisoned");
+    clear_pgq_env();
+
     let cli = Cli::try_parse_from([
-        "pgq",
+        "pgsql-query",
         "--host",
         "db.internal",
         "--port",
@@ -94,6 +123,9 @@ fn summarizes_field_based_connection_target() {
 #[test]
 fn reads_pgq_prefixed_environment_variables() {
     // Serialized env-var test; avoid parallel mutation by using distinct names only once here.
+    let _guard = pgq_env_lock().lock().expect("env lock poisoned");
+    clear_pgq_env();
+
     unsafe {
         std::env::set_var("PGQ_URL", "postgres://demo:secret@db.internal:5432/app");
         std::env::remove_var("PGQ_HOST");
@@ -103,7 +135,7 @@ fn reads_pgq_prefixed_environment_variables() {
         std::env::remove_var("PGQ_DB");
     }
 
-    let cli = Cli::try_parse_from(["pgq", "ping"]).expect("cli should parse");
+    let cli = Cli::try_parse_from(["pgsql-query", "ping"]).expect("cli should parse");
     let resolved = ConnectionConfig::from_sources(&cli).expect("config should resolve");
 
     assert_eq!(

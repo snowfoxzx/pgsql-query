@@ -1,5 +1,5 @@
 use clap::CommandFactory;
-use pgq::cli::Cli;
+use pgsql_query::cli::Cli;
 
 #[test]
 fn help_mentions_supported_environment_variables() {
